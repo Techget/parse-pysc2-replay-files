@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from pysc2.lib import app, features, point
+from pysc2.lib import features, point
+from absl import app, flags
 from pysc2.env.environment import TimeStep, StepType
 from pysc2 import run_configs
 from s2clientprotocol import sc2api_pb2 as sc_pb
-import gflags as flags
 import importlib
 
 FLAGS = flags.FLAGS
