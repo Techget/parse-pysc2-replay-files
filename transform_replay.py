@@ -9,11 +9,18 @@ import importlib
 import glob
 from random import randint
 import pickle
+from multiprocessing import Process
+from tqdm import tqdm
+import math
+import random
+import numpy as np
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("replay", None, "Path to a replay file.")
+flags.DEFINE_string("replays", None, "Path to the replay files.")
 flags.DEFINE_string("agent", None, "Path to an agent.")
-flags.mark_flag_as_required("replay")
+flags.DEFINE_integer("procs", 1, "Number of processes.", lower_bound=1)
+flags.DEFINE_integer("frames", 10, "Frames per game.", lower_bound=1)
+flags.mark_flag_as_required("replays")
 flags.mark_flag_as_required("agent")
 
 class Parser:
@@ -24,14 +31,14 @@ class Parser:
                  screen_size_px=(60, 60),
                  minimap_size_px=(60, 60),
                  discount=1.,
-                 step_mul=1):
+                 frames_per_game=1):
 
         print("Parsing " + replay_file_path)
 
         self.replay_file_name = replay_file_path.split("/")[-1].split(".")[0]
         self.agent = agent
         self.discount = discount
-        self.step_mul = step_mul
+        self.frames_per_game = frames_per_game
 
         self.run_config = run_configs.get()
         self.sc2_proc = self.run_config.start()
@@ -85,18 +92,25 @@ class Parser:
     def start(self):
         _features = features.Features(self.controller.game_info())
 
-        while True:
-            self.controller.step(randint(1, self.step_mul*2))
+        frames = random.sample(np.arange(self.info.game_duration_loops).tolist(), self.info.game_duration_loops)
+        frames = frames[0 : min(self.frames_per_game, self.info.game_duration_loops)]
+        frames.sort()
+
+        last_frame = 0
+        for frame in frames:
+            skips = frame - last_frame
+            last_frame = frame
+            self.controller.step(skips)
             obs = self.controller.observe()
             agent_obs = _features.transform_obs(obs.observation)
 
-            if obs.player_result: # Episide over.
+            if obs.player_result: # Episode over.
                 self._state = StepType.LAST
                 discount = 0
             else:
                 discount = self.discount
 
-            self._episode_steps += self.step_mul
+            self._episode_steps += skips
 
             step = TimeStep(step_type=self._state, reward=0,
                             discount=discount, observation=agent_obs)
@@ -109,31 +123,38 @@ class Parser:
             self._state = StepType.MID
 
         print("Saving data")
-        pickle.dump(self.agent.states, open("data/" + self.replay_file_name + ".p", "wb"))
+        pickle.dump({"info" : self.info, "state" : self.agent.states}, open("data/" + self.replay_file_name + ".p", "wb"))
         print("Data successfully saved")
         self.agent.states = []
         print("Data flushed")
 
         print("Done")
 
+def parse_replay(replay, agent_module, agent_cls, frames_per_game):
+    try:
+        parser = Parser(replay, agent_cls(), frames_per_game=frames_per_game)
+        parser.start()
+    except Exception as e:
+        print(e)
 
 def main(unused):
     agent_module, agent_name = FLAGS.agent.rsplit(".", 1)
     agent_cls = getattr(importlib.import_module(agent_module), agent_name)
+    processes = FLAGS.procs
+    replay_folder = FLAGS.replays
+    frames_per_game = FLAGS.frames
 
-    replays = glob.glob("/home/noju/StarCraftII/Replays/*.SC2Replay")
+    replays = glob.glob(replay_folder)
 
-    i = 0
-    for replay in replays:
-        if i < 225:
-            i+=1
-            continue
-        try:
-            parser = Parser(replay, agent_cls(), step_mul=100)
-            parser.start()
-        except Exception as e:
-            print(e)
-        i += 1
+    for i in tqdm(range(math.ceil(len(replays)/processes))):
+        procs = []
+        for p in range(processes):
+            if i+p < len(replays):
+                p = Process(target=parse_replay, args=(replays[i+p], agent_module, agent_cls, frames_per_game))
+                p.start()
+                procs.append(p)
+        for p in procs:
+            p.join()
 
 if __name__ == "__main__":
     app.run(main)

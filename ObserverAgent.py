@@ -48,12 +48,14 @@ class ObserverAgent():
         state["screen"]["shields"] = time_step.observation["screen"][9]
         state["screen"]["unit_density"] = time_step.observation["screen"][10]
 
+        # Binary encoding of available actions
+        '''
         state["game_loop"] = time_step.observation["game_loop"]
         state["player"] = time_step.observation["player"]
-
-        # Binary encoding of available actions
+        
         state["available_actions"] = np.zeros(len(sc_action.FUNCTIONS))
         for i in time_step.observation["available_actions"]:
             state["available_actions"][i] = 1.0
+        '''
 
         self.states.append(state)
