@@ -14,12 +14,16 @@ from tqdm import tqdm
 import math
 import random
 import numpy as np
+import multiprocessing
+
+cpus = multiprocessing.cpu_count()
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("replays", None, "Path to the replay files.")
 flags.DEFINE_string("agent", None, "Path to an agent.")
-flags.DEFINE_integer("procs", 1, "Number of processes.", lower_bound=1)
+flags.DEFINE_integer("procs", cpus, "Number of processes.", lower_bound=1)
 flags.DEFINE_integer("frames", 10, "Frames per game.", lower_bound=1)
+flags.DEFINE_integer("start", 0, "Start at replay no.", lower_bound=0)
 flags.mark_flag_as_required("replays")
 flags.mark_flag_as_required("agent")
 
@@ -145,10 +149,13 @@ def main(unused):
     frames_per_game = FLAGS.frames
 
     replays = glob.glob(replay_folder)
+    start = FLAGS.start
 
     for i in tqdm(range(math.ceil(len(replays)/processes))):
         procs = []
         for p in range(processes):
+            if i+p < start:
+                continue
             if i+p < len(replays):
                 p = Process(target=parse_replay, args=(replays[i+p], agent_module, agent_cls, frames_per_game))
                 p.start()
