@@ -24,6 +24,7 @@ flags.DEFINE_string("agent", None, "Path to an agent.")
 flags.DEFINE_integer("procs", cpus, "Number of processes.", lower_bound=1)
 flags.DEFINE_integer("frames", 10, "Frames per game.", lower_bound=1)
 flags.DEFINE_integer("start", 0, "Start at replay no.", lower_bound=0)
+flags.DEFINE_integer("batch", 16, "Size of replay batch for each process", lower_bound=1, upper_bound=512)
 flags.mark_flag_as_required("replays")
 flags.mark_flag_as_required("agent")
 
@@ -48,11 +49,11 @@ class Parser:
         self.sc2_proc = self.run_config.start()
         self.controller = self.sc2_proc.controller
 
-        replay_data = self.run_config.replay_data(replay_file_path)
+        replay_data = self.run_config.replay_data(self.replay_file_name + '.SC2Replay')
         ping = self.controller.ping()
         self.info = self.controller.replay_info(replay_data)
         if not self._valid_replay(self.info, ping):
-            raise Exception("{} is not a valid replay file!".format(replay_file_path))
+            raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
 
         screen_size_px = point.Point(*screen_size_px)
         minimap_size_px = point.Point(*minimap_size_px)
@@ -134,12 +135,13 @@ class Parser:
 
         print("Done")
 
-def parse_replay(replay, agent_module, agent_cls, frames_per_game):
-    try:
-        parser = Parser(replay, agent_cls(), frames_per_game=frames_per_game)
-        parser.start()
-    except Exception as e:
-        print(e)
+def parse_replay(replay_batch, agent_module, agent_cls, frames_per_game):
+    for replay in replay_batch:
+        try:
+            parser = Parser(replay, agent_cls(), frames_per_game=frames_per_game)
+            parser.start()
+        except Exception as e:
+            print(e)
 
 def main(unused):
     agent_module, agent_name = FLAGS.agent.rsplit(".", 1)
@@ -147,19 +149,25 @@ def main(unused):
     processes = FLAGS.procs
     replay_folder = FLAGS.replays
     frames_per_game = FLAGS.frames
+    batch_size = FLAGS.batch
 
-    replays = glob.glob(replay_folder)
+    replays = glob.glob(replay_folder + '*.SC2Replay')
     start = FLAGS.start
 
-    for i in tqdm(range(math.ceil(len(replays)/processes))):
+    for i in tqdm(range(math.ceil(len(replays)/processes/batch_size))):
         procs = []
+        x = i * processes * batch_size
+        if x < start:
+            continue
         for p in range(processes):
-            if i+p < start:
-                continue
-            if i+p < len(replays):
-                p = Process(target=parse_replay, args=(replays[i+p], agent_module, agent_cls, frames_per_game))
-                p.start()
-                procs.append(p)
+            xp1 = x + p * batch_size
+            xp2 = xp1 + batch_size
+            xp2 = min(xp2, len(replays))
+            p = Process(target=parse_replay, args=(replays[xp1:xp2], agent_module, agent_cls, frames_per_game))
+            p.start()
+            procs.append(p)
+            if xp2 == len(replays):
+                break
         for p in procs:
             p.join()
 
