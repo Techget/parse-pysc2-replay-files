@@ -2,8 +2,10 @@
 
 import pickle
 import numpy as np
+import math
 
 from pysc2.lib import actions as sc_action
+from pysc2.lib import static_data
 
 class ObserverAgent():
 
@@ -14,39 +16,46 @@ class ObserverAgent():
 
         state = {}
 
-        state["minimap"] = {}
+        state["minimap"] = [
+            time_step.observation["minimap"][0] / 255,                  # height_map
+            time_step.observation["minimap"][1] / 2,                    # visibility
+            time_step.observation["minimap"][2],                        # creep
+            time_step.observation["minimap"][3],                        # camera
+            (time_step.observation["minimap"][5] == 1).astype(int),     # own_units
+            (time_step.observation["minimap"][5] == 3).astype(int),     # neutral_units
+            (time_step.observation["minimap"][5] == 4).astype(int),     # enemy_units
+            time_step.observation["minimap"][6]                         # selected
+        ]
 
-        state["minimap"]["height_map"] = time_step.observation["minimap"][0] / 256
-        state["minimap"]["visibility"] = time_step.observation["minimap"][1] / 2
-        state["minimap"]["creep"] = time_step.observation["minimap"][2]
-        state["minimap"]["camera"] = time_step.observation["minimap"][3]
-        #minimap.player_id = time_step.observation["minimap"][4]
-        player_relative = time_step.observation["minimap"][5]
-        state["minimap"]["own_units"] = (player_relative == 1).nonzero()
-        state["minimap"]["neutral_units"] = (player_relative == 3).nonzero()
-        state["minimap"]["enemy_units"] = (player_relative == 4).nonzero()
-        state["minimap"]["selected"] = time_step.observation["minimap"][6]
+        unit_type = time_step.observation["screen"][6]
+        unit_type_compressed = np.zeros(unit_type.shape, dtype=np.float)
+        for y in range(len(unit_type)):
+            for x in range(len(unit_type[y])):
+                if unit_type[y][x] > 0 and unit_type[y][x] in static_data.UNIT_TYPES:
+                    unit_type_compressed[y][x] = static_data.UNIT_TYPES.index(unit_type[y][x]) / len(static_data.UNIT_TYPES)
 
-        state["screen"] = {}
+        hit_points = time_step.observation["screen"][8]
+        hit_points_logged = np.zeros(hit_points.shape, dtype=np.float)
+        for y in range(len(hit_points)):
+            for x in range(len(hit_points[y])):
+                if hit_points[y][x] > 0:
+                    hit_points_logged[y][x] = math.log(hit_points[y][x]) / 4
 
-        state["screen"]["height_map"] = time_step.observation["screen"][0] / 256
-        state["screen"]["visibility"] = time_step.observation["screen"][1] / 2
-        state["screen"]["creep"] = time_step.observation["screen"][2]
-        state["screen"]["power"] = time_step.observation["screen"][3]
-        #state.screen.player_id = time_step.observation["player_id"][0]
-        player_relative = time_step.observation["screen"][4]
-        state["screen"]["own_units"] = (player_relative == 1).nonzero()
-        state["screen"]["neutral_units"] = (player_relative == 3).nonzero()
-        state["screen"]["enemy_units"] = (player_relative == 4).nonzero()
-
-        # How to deal with this thing?
-        unit_type = time_step.observation["screen"][5]
-
-        state["screen"]["selected"] = time_step.observation["screen"][6]
-        state["screen"]["hit_points"] = time_step.observation["screen"][7]
-        state["screen"]["energy"] = time_step.observation["screen"][8]
-        state["screen"]["shields"] = time_step.observation["screen"][9]
-        state["screen"]["unit_density"] = time_step.observation["screen"][10]
+        state["screen"] = [
+            time_step.observation["screen"][0] / 255,               # height_map
+            time_step.observation["screen"][1] / 2,                 # visibility
+            time_step.observation["screen"][2],                     # creep
+            time_step.observation["screen"][3],                     # power
+            (time_step.observation["screen"][5] == 1).astype(int),  # own_units
+            (time_step.observation["screen"][5] == 3).astype(int),  # neutral_units
+            (time_step.observation["screen"][5] == 4).astype(int),  # enemy_units
+            unit_type_compressed,                                   # unit_type
+            time_step.observation["screen"][7],                     # selected
+            hit_points_logged,                                      # hit_points
+            time_step.observation["screen"][9] / 255,               # energy
+            time_step.observation["screen"][10] / 255,              # shields
+            #time_step.observation["screen"][11]                     # unit_density
+        ]
 
         # Binary encoding of available actions
         '''
