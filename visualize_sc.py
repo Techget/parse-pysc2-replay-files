@@ -11,8 +11,10 @@ import glob
 from keras.models import load_model
 from random import randint
 
-autoencoder = load_model('model/autoencoder_screen_5_64_128.h5')
 features = "screen"
+
+autoencoder = load_model('model/autoencoder_' + features + '_32_128.h5')
+
 feature_layers = 12
 if features == "minimap":
     feature_layers = 8
@@ -22,16 +24,15 @@ height = 60
 x_train = []
 x_test = []
 
-data_files = glob.glob("data/*")
-
+data_files = glob.glob("data_test/*")
+np.random.shuffle(data_files)
 n = len(data_files)
 i = 0
-for data_file in data_files:
+for data_file in data_files[:1]:
     game = pickle.load(open(data_file, "rb"))
     states = game["state"]
     f = [state[features] for state in states]
-    if i > n * 0.75:
-        x_test = x_test + f
+    x_test = x_test + f
     i += 1
 
 x_train = np.array(x_train).reshape((len(x_train), feature_layers, width, height)).astype('float32')
@@ -43,7 +44,7 @@ decoded_img = decoded_imgs[x]
 img = x_test[x]
 
 n = feature_layers
-plt.figure(figsize=(20, 12))
+plt.figure(figsize=(16, 6))
 for i in range(n):
     # display original
     ax = plt.subplot(2, n, i+1)
