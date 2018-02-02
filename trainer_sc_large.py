@@ -116,14 +116,14 @@ autoencoder.fit_generator(batchGenerator("../data_train"),
                 workers=(int)(multiprocessing.cpu_count() / 2),
                 callbacks=[history, early_stopping])
 
-# Test
-test_data = load_data("../data_test")
-test_loss = autoencoder.evaluate(x=test_data, y=test_data, batch_size=batch_size)
-print("Test loss = " + str(test_loss))
-
 # Save stuff
 name = 'autoencoder_' + features + '_' + str(compression) + '_' + str(filters)
 autoencoder.save('model/' + name + '.h5')
 print(history.history)
 pickle.dump(history.history, open('log/' + name + '.p', 'wb'))
 print("Model saved")
+
+# Test
+test_data = load_data("../data_test")
+test_loss = autoencoder.evaluate(x=test_data, y=test_data, batch_size=batch_size)
+print("Test loss = " + str(test_loss))
