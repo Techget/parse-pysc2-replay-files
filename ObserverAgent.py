@@ -63,8 +63,9 @@ class ObserverAgent():
         # Binary encoding of available actions
         '''
         state["game_loop"] = time_step.observation["game_loop"]
-        state["player"] = time_step.observation["player"]
         '''
+        state["player"] = time_step.observation["player"]
+        
         state["available_actions"] = np.zeros(len(sc_action.FUNCTIONS))
         for i in time_step.observation["available_actions"]:
             state["available_actions"][i] = 1.0
