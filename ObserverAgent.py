@@ -6,14 +6,17 @@ import math
 
 from pysc2.lib import actions as sc_action
 from pysc2.lib import static_data
+from pysc2.lib import features
+from pysc2.lib import FUNCTIONS
+from pysc2.lib import static_data
 
 class ObserverAgent():
 
     def __init__(self):
         self.states = []
 
-    def step(self, time_step, actions, info):
-
+    def step(self, time_step, actions, info, feat):
+        # print(actions)
         state = {}
 
         state["minimap"] = [
@@ -65,6 +68,15 @@ class ObserverAgent():
         state["available_actions"] = np.zeros(len(sc_action.FUNCTIONS))
         for i in time_step.observation["available_actions"]:
             state["available_actions"][i] = 1.0
-        '''
+        
+        transformed_actions = []
+        for a in actions:
+            pysc2_function_call = feat.reverse_action(a)
+            func_id = pysc2_function_call.function
+            func_name = FUNCTIONS[func_id].name
+            func_args = pysc2_function_call.arguments
 
+        state["pysc2_actions"] = transformed_actions
+        '''
+        state["actions"] = actions
         self.states.append(state)

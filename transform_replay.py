@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from pysc2.lib import features, point
+#from pysc2 import features, point
 from absl import app, flags
 from pysc2.env.environment import TimeStep, StepType
 from pysc2 import run_configs
@@ -17,6 +18,7 @@ import numpy as np
 import multiprocessing
 
 cpus = multiprocessing.cpu_count()
+#cpus = 1
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("replays", None, "Path to the replay files.")
@@ -120,7 +122,7 @@ class Parser:
             step = TimeStep(step_type=self._state, reward=0,
                             discount=discount, observation=agent_obs)
 
-            self.agent.step(step, obs.actions, self.info)
+            self.agent.step(step, obs.actions, self.info, _features)
 
             if obs.player_result:
                 break
@@ -128,6 +130,7 @@ class Parser:
             self._state = StepType.MID
 
         print("Saving data")
+        #print(self.agent.states)
         pickle.dump({"info" : self.info, "state" : self.agent.states}, open("data/" + self.replay_file_name + ".p", "wb"))
         print("Data successfully saved")
         self.agent.states = []
