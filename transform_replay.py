@@ -24,7 +24,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string("replays", None, "Path to the replay files.")
 flags.DEFINE_string("agent", None, "Path to an agent.")
 flags.DEFINE_integer("procs", cpus, "Number of processes.", lower_bound=1)
-flags.DEFINE_integer("frames", 10, "Frames per game.", lower_bound=1)
+flags.DEFINE_integer("frames", 10000, "Frames per game.", lower_bound=1)
 flags.DEFINE_integer("start", 0, "Start at replay no.", lower_bound=0)
 flags.DEFINE_integer("batch", 16, "Size of replay batch for each process", lower_bound=1, upper_bound=512)
 flags.mark_flag_as_required("replays")
@@ -90,7 +90,7 @@ class Parser:
             # Probably corrupt, or just not interesting.
             return False
         for p in info.player_info:
-            if p.player_apm < 10 or p.player_mmr < 1000:
+            if p.player_apm < 60 or p.player_mmr < 2000:
                 # Low APM = player just standing around.
                 # Low MMR = corrupt replay or player who is weak.
                 return False
