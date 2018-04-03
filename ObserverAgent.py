@@ -64,19 +64,26 @@ class ObserverAgent():
         '''
         state["game_loop"] = time_step.observation["game_loop"]
         state["player"] = time_step.observation["player"]
-        
+        '''
         state["available_actions"] = np.zeros(len(sc_action.FUNCTIONS))
         for i in time_step.observation["available_actions"]:
             state["available_actions"][i] = 1.0
         
         transformed_actions = []
         for a in actions:
-            pysc2_function_call = feat.reverse_action(a)
-            func_id = pysc2_function_call.function
-            func_name = FUNCTIONS[func_id].name
-            func_args = pysc2_function_call.arguments
+            try:
+                pysc2_function_call = feat.reverse_action(a)
+                func_id = pysc2_function_call.function
+                func_name = FUNCTIONS[func_id].name
+                func_args = pysc2_function_call.arguments
+                if func_name.split('_')[0] in {'Attack', 'Scan', 'Behavior','BorrowUp', 'Effect','Hallucination',\
+                    'Harvest', 'Hold','Land','Lift', 'Load','Move','Patrol','Rally','Smart','TrainWarp',\
+                    'UnloadAll', 'UnloadAllAt''Build', 'Train', 'Research', 'Morph', 'Cancel', 'Halt', 'Stop'}:
+                    transformed_actions.append([func_id, func_name, func_args])
+            except:
+                pass
 
-        state["pysc2_actions"] = transformed_actions
-        '''
-        state["actions"] = actions
+        state["actions"] = transformed_actions
+        
+        # state["actions"] = actions
         self.states.append(state)

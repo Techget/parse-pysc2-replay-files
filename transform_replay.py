@@ -17,8 +17,8 @@ import random
 import numpy as np
 import multiprocessing
 
-cpus = multiprocessing.cpu_count()
-#cpus = 1
+# cpus = multiprocessing.cpu_count()
+cpus = 1
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("replays", None, "Path to the replay files.")
@@ -89,11 +89,11 @@ class Parser:
                     len(info.player_info) != 2):
             # Probably corrupt, or just not interesting.
             return False
-#   for p in info.player_info:
-#       if p.player_apm < 10 or p.player_mmr < 1000:
-#           # Low APM = player just standing around.
-#           # Low MMR = corrupt replay or player who is weak.
-#           return False
+        for p in info.player_info:
+            if p.player_apm < 10 or p.player_mmr < 1000:
+                # Low APM = player just standing around.
+                # Low MMR = corrupt replay or player who is weak.
+                return False
         return True
 
     def start(self):
