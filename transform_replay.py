@@ -24,7 +24,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string("replays", None, "Path to the replay files.")
 flags.DEFINE_string("agent", None, "Path to an agent.")
 flags.DEFINE_integer("procs", cpus, "Number of processes.", lower_bound=1)
-flags.DEFINE_integer("frames", 10000, "Frames per game.", lower_bound=1)
+flags.DEFINE_integer("frames", 1000, "Frames per game.", lower_bound=1)
 flags.DEFINE_integer("start", 0, "Start at replay no.", lower_bound=0)
 flags.DEFINE_integer("batch", 16, "Size of replay batch for each process", lower_bound=1, upper_bound=512)
 flags.mark_flag_as_required("replays")
@@ -100,7 +100,9 @@ class Parser:
         _features = features.Features(self.controller.game_info())
 
         frames = random.sample(np.arange(self.info.game_duration_loops).tolist(), self.info.game_duration_loops)
-        frames = frames[0 : min(self.frames_per_game, self.info.game_duration_loops)]
+        # frames = frames[0 : min(self.frames_per_game, self.info.game_duration_loops)]
+        step_mul = 8;
+        frames = frames[0:int(self.info.game_duration_loops)/step_mul]
         frames.sort()
 
         last_frame = 0
