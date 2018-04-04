@@ -35,8 +35,8 @@ class Parser:
                  replay_file_path,
                  agent,
                  player_id=1,
-                 screen_size_px=(60, 60),
-                 minimap_size_px=(60, 60),
+                 screen_size_px=(64, 64), # (60, 60)
+                 minimap_size_px=(64, 64), # (60, 60)
                  discount=1.,
                  frames_per_game=1):
 
