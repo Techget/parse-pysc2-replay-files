@@ -24,9 +24,9 @@ class ObserverAgent():
             time_step.observation["minimap"][1] / 2,                    # visibility
             time_step.observation["minimap"][2],                        # creep
             time_step.observation["minimap"][3],                        # camera
-            (time_step.observation["minimap"][5] == 1).astype(int),     # own_units
-            (time_step.observation["minimap"][5] == 3).astype(int),     # neutral_units
-            (time_step.observation["minimap"][5] == 4).astype(int),     # enemy_units
+            # (time_step.observation["minimap"][5] == 1).astype(int),     # own_units
+            # (time_step.observation["minimap"][5] == 3).astype(int),     # neutral_units
+            # (time_step.observation["minimap"][5] == 4).astype(int),     # enemy_units
             time_step.observation["minimap"][6]                         # selected
         ]
 
@@ -49,15 +49,15 @@ class ObserverAgent():
             time_step.observation["screen"][1] / 2,                 # visibility
             time_step.observation["screen"][2],                     # creep
             time_step.observation["screen"][3],                     # power
-            (time_step.observation["screen"][5] == 1).astype(int),  # own_units
-            (time_step.observation["screen"][5] == 3).astype(int),  # neutral_units
-            (time_step.observation["screen"][5] == 4).astype(int),  # enemy_units
+            # (time_step.observation["screen"][5] == 1).astype(int),  # own_units
+            # (time_step.observation["screen"][5] == 3).astype(int),  # neutral_units
+            # (time_step.observation["screen"][5] == 4).astype(int),  # enemy_units
             unit_type_compressed,                                   # unit_type
             time_step.observation["screen"][7],                     # selected
             hit_points_logged,                                      # hit_points
             time_step.observation["screen"][9] / 255,               # energy
             time_step.observation["screen"][10] / 255,              # shields
-            #time_step.observation["screen"][11]                     # unit_density
+            time_step.observation["screen"][11]                     # unit_density
         ]
 
         # Binary encoding of available actions
