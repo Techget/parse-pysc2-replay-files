@@ -55,7 +55,7 @@ class Parser:
         replay_data = self.run_config.replay_data(self.replay_file_name + '.SC2Replay')
         ping = self.controller.ping()
         self.info = self.controller.replay_info(replay_data)
-        print(self.info)
+        # print(self.info)
         if not self._valid_replay(self.info, ping):
             self.controller.close()
             raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
@@ -64,7 +64,7 @@ class Parser:
         for player_info in info.player_info:
             race = sc_common.Race.Name(player_info.player_info.race_actual)
             self.replay_file_name = race + '_' + self.replay_file_name
-
+        print(self.replay_file_name)
 
         screen_size_px = point.Point(*screen_size_px)
         minimap_size_px = point.Point(*minimap_size_px)
