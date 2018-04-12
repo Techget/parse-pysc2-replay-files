@@ -17,8 +17,8 @@ import random
 import numpy as np
 import multiprocessing
 
-cpus = multiprocessing.cpu_count()
-# cpus = 1
+# cpus = multiprocessing.cpu_count()
+cpus = 1
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("replays", None, "Path to the replay files.")
@@ -54,7 +54,9 @@ class Parser:
         replay_data = self.run_config.replay_data(self.replay_file_name + '.SC2Replay')
         ping = self.controller.ping()
         self.info = self.controller.replay_info(replay_data)
+        print(self.info)
         if not self._valid_replay(self.info, ping):
+            self.controller.close()
             raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
 
         screen_size_px = point.Point(*screen_size_px)
@@ -101,8 +103,8 @@ class Parser:
 
         frames = random.sample(np.arange(self.info.game_duration_loops).tolist(), self.info.game_duration_loops)
         # frames = frames[0 : min(self.frames_per_game, self.info.game_duration_loops)]
-        step_mul = 8;
-        frames = frames[0:int(self.info.game_duration_loops)//step_mul]
+        step_mul = 10;
+        frames = frames[0:int(self.info.game_duration_loops)/step_mul]
         frames.sort()
 
         last_frame = 0
