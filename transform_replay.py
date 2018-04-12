@@ -6,6 +6,7 @@ from absl import app, flags
 from pysc2.env.environment import TimeStep, StepType
 from pysc2 import run_configs
 from s2clientprotocol import sc2api_pb2 as sc_pb
+from s2clientprotocol import common_pb2 as sc_common
 import importlib
 import glob
 from random import randint
@@ -57,6 +58,12 @@ class Parser:
         if not self._valid_replay(self.info, ping):
             self.controller.close()
             raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
+
+        self.replay_file_name = self.info.map_name+'_'+self.replay_file_name 
+        for player_info in info.player_info:
+            race = sc_common.Race.Name(player_info.player_info.race_actual)
+            self.replay_file_name = race + '_' + self.replay_file_name
+
 
         screen_size_px = point.Point(*screen_size_px)
         minimap_size_px = point.Point(*minimap_size_px)
