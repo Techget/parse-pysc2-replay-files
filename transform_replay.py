@@ -57,7 +57,7 @@ class Parser:
         self.info = self.controller.replay_info(replay_data)
         # print(self.info)
         if not self._valid_replay(self.info, ping):
-            self.controller.close()
+            self.sc2_proc.close()
             raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
 
         self.replay_file_name = self.info.map_name+'_'+self.replay_file_name 
