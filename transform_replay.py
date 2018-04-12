@@ -18,8 +18,8 @@ import random
 import numpy as np
 import multiprocessing
 
-# cpus = multiprocessing.cpu_count()
-cpus = 1
+cpus = multiprocessing.cpu_count()
+# cpus = 1
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("replays", None, "Path to the replay files.")
