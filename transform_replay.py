@@ -55,6 +55,7 @@ class Parser:
         ping = self.controller.ping()
         self.info = self.controller.replay_info(replay_data)
         if not self._valid_replay(self.info, ping):
+            self.controller.close()
             raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
 
         screen_size_px = point.Point(*screen_size_px)
@@ -101,7 +102,7 @@ class Parser:
 
         frames = random.sample(np.arange(self.info.game_duration_loops).tolist(), self.info.game_duration_loops)
         # frames = frames[0 : min(self.frames_per_game, self.info.game_duration_loops)]
-        step_mul = 8;
+        step_mul = 10;
         frames = frames[0:int(self.info.game_duration_loops)/step_mul]
         frames.sort()
 
