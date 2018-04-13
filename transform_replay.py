@@ -105,10 +105,11 @@ class Parser:
             # Probably corrupt, or just not interesting.
             return False
         for p in info.player_info:
-            if p.player_apm < 60 or p.player_mmr < 2000:
+            if p.player_apm < 60 or (p.player_mmr != None and p.player_mmr < 2000):
                 # Low APM = player just standing around.
                 # Low MMR = corrupt replay or player who is weak.
                 return False
+
         return True
 
     def start(self):
