@@ -64,10 +64,10 @@ class Parser:
         # global FILE_OP
         # FILE_OP.write(self.replay_file_name + '.SC2Replay')
 
-        self.replay_file_name = self.info.map_name+'_'+self.replay_file_name 
-        for player_info in self.info.player_info:
-            race = sc_common.Race.Name(player_info.player_info.race_actual)
-            self.replay_file_name = race + '_' + self.replay_file_name
+        # self.replay_file_name = self.info.map_name+'_'+self.replay_file_name 
+        # for player_info in self.info.player_info:
+        #     race = sc_common.Race.Name(player_info.player_info.race_actual)
+        #     self.replay_file_name = race + '_' + self.replay_file_name
 
 
         screen_size_px = point.Point(*screen_size_px)
