@@ -119,13 +119,13 @@ class Parser:
         frames = random.sample(np.arange(self.info.game_duration_loops).tolist(), self.info.game_duration_loops)
         # frames = frames[0 : min(self.frames_per_game, self.info.game_duration_loops)]
         step_mul = 10;
-        frames = frames[0:int(self.info.game_duration_loops)/step_mul]
+        frames = frames[0:int(self.info.game_duration_loops)//step_mul]
         frames.sort()
 
         last_frame = 0
         i = 0
         # for frame in frames:
-        skips = 10
+        skips = step_mul
         while i < self.info.game_duration_loops:
             # skips = frame - last_frame
             # last_frame = frame
