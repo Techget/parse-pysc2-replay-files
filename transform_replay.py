@@ -18,7 +18,7 @@ import random
 import numpy as np
 import multiprocessing
 
-# cpus = multiprocessing.cpu_count()
+#cpus = multiprocessing.cpu_count()
 cpus = 1
 
 FLAGS = flags.FLAGS
@@ -59,7 +59,7 @@ class Parser:
         self.info = self.controller.replay_info(replay_data)
         # print(self.info)
         if not self._valid_replay(self.info, ping):
-            self.sc2_proc.close()
+            # self.sc2_proc.close()
             print(self.info)
             raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
 
@@ -105,7 +105,8 @@ class Parser:
             # Probably corrupt, or just not interesting.
             return False
         for p in info.player_info:
-            if p.player_apm < 60 or (p.player_mmr != None and p.player_mmr < 2000):
+            # print(p.player_mmr)
+            if p.player_apm < 60 or (p.player_mmr != 0 and p.player_mmr < 2000):
                 # Low APM = player just standing around.
                 # Low MMR = corrupt replay or player who is weak.
                 return False
