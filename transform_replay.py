@@ -31,6 +31,8 @@ flags.DEFINE_integer("batch", 16, "Size of replay batch for each process", lower
 flags.mark_flag_as_required("replays")
 flags.mark_flag_as_required("agent")
 
+FILE_OP = None
+
 class Parser:
     def __init__(self,
                  replay_file_path,
@@ -56,8 +58,11 @@ class Parser:
         ping = self.controller.ping()
         self.info = self.controller.replay_info(replay_data)
         if not self._valid_replay(self.info, ping):
-            self.sc2_proc.close()
+            # self.sc2_proc.close()
             raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
+
+        # global FILE_OP
+        # FILE_OP.write(self.replay_file_name + '.SC2Replay')
 
         self.replay_file_name = self.info.map_name+'_'+self.replay_file_name 
         for player_info in self.info.player_info:
@@ -189,4 +194,5 @@ def main(unused):
             p.join()
 
 if __name__ == "__main__":
+    FILE_OP= open("parsed.txt","w+")
     app.run(main)
