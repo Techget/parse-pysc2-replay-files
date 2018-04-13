@@ -9,7 +9,10 @@ replay_files_directory = home+'StarCraftII/Replays'
 temporary_save_directory = home+'StarCraftII/temp_save_replays'
 
 for fn in os.listdir(parsed_directory):
-	print(os.path.splitext(fn)[0])
+	filename_without_suffix = os.path.splitext(fn)[0]
+	if os.path.isfile(replay_files_directory+'/'+filename_without_suffix+'.SC2Replay'):
+		os.rename(replay_files_directory+'/'+filename_without_suffix+'.SC2Replay',\
+			temporary_save_directory+'/'+filename_without_suffix+'.SC2Replay')
 
 
 
