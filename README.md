@@ -1,4 +1,4 @@
-# pysc2-replay
+# Parse pysc2 replay files
 
 Framework for inspecting actions and observatinos in StarCraftII replays.
 Depends on [pysc2](https://github.com/deepmind/pysc2). Refer to [pysc2-replay](https://github.com/narhen/pysc2-replay)
