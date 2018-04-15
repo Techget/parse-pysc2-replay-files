@@ -21,3 +21,6 @@ This will execute a function `step` in `ObserverAgent.ObserverAgent` for each st
 
 Will put extracted files under `data/`
 
+To inspect the extracted files, make use of `testLoadPickle.py`, remember to change the path variable in the file.
+
+    $ python3 testLoadPickle.py
