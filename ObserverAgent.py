@@ -77,10 +77,10 @@ class ObserverAgent():
                 func_id = pysc2_function_call.function
                 func_name = FUNCTIONS[func_id].name
                 func_args = pysc2_function_call.arguments
-                if func_name.split('_')[0] in {'Attack', 'Scan', 'Behavior','BorrowUp', 'Effect','Hallucination',\
-                    'Harvest', 'Hold','Land','Lift', 'Load','Move','Patrol','Rally','Smart','TrainWarp',\
-                    'UnloadAll', 'UnloadAllAt''Build', 'Train', 'Research', 'Morph', 'Cancel', 'Halt', 'Stop'}:
-                    transformed_actions.append([func_id, func_name, func_args])
+                # if func_name.split('_')[0] in {'Attack', 'Scan', 'Behavior','BorrowUp', 'Effect','Hallucination',\
+                #     'Harvest', 'Hold','Land','Lift', 'Load','Move','Patrol','Rally','Smart','TrainWarp',\
+                #     'UnloadAll', 'UnloadAllAt''Build', 'Train', 'Research', 'Morph', 'Cancel', 'Halt', 'Stop'}:
+                transformed_actions.append([func_id, func_name, func_args])
             except:
                 pass
 
