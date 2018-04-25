@@ -1,20 +1,36 @@
 import pickle
 import pprint
 import numpy
+from google.protobuf.json_format import MessageToJson
+import json
 
 pp = pprint.PrettyPrinter(indent=4)
 
-filename = "fce8134bc5edf4fff731fefccd6e78dcc11006c035def9d0ae9ecd63f9fe7267.p"
-temp = pickle.load(open("data_64/"+filename, "rb"))
+#filename = "fce8134bc5edf4fff731fefccd6e78dcc11006c035def9d0ae9ecd63f9fe7267.p"
+#filename = "fefa9e6630216c279f8a5a371bea283f091244452f77306376feadba7314b00f.p"
+#filename = "2e3b9605f05053390d59ca132893b0210ece353b991c12d62cab9193dd4a9bed.p"
+filename = "7ab0c4728b61cb9fa800dd27691d2f8e673b49a94aa6f01261e5fc7c15cb3619.p"
+temp = pickle.load(open("data/"+filename, "rb"))
 
 print(temp.keys())
 
-print(temp['info'])
+loaded_replay_info_json = MessageToJson(temp['info'])
+info_dict = json.loads(loaded_replay_info_json)
+print(info_dict)
+
+print(type(loaded_replay_info_json))
+for pi in info_dict['playerInfo']:
+	print(pi['playerResult']['result'])
+
+
+
+#print(temp['info'])
 #print('#####')
 #for pi in temp['info'].player_info:
 #	print('###',pi)
 
-
+#for pi in temp['info'].player_info:
+#	print(pi.player_result['Result'])
 
 #print(len(temp['state']))
 #print(temp['state'][100])
@@ -32,12 +48,15 @@ print(temp['info'])
 #print(temp2.shape)
 
 i = 0
+counter = 0
 while i < len(temp['state']):
 	if temp['state'][i]['actions'] != []:
-		print((numpy.array(temp['state'][i]['minimap'])).shape)
+#		print((numpy.array(temp['state'][i]['minimap'])).shape)
 
 		print(temp['state'][i]['actions'])
+		counter += len(temp['state'][i]['actions'])
+#		print(temp['state'][i])
 #		break
 	i+=1
 
-
+print(counter)
