@@ -17,6 +17,7 @@ import math
 import random
 import numpy as np
 import multiprocessing
+import os
 
 # cpus = multiprocessing.cpu_count() # 16
 cpus = 8 # only use 8 cpu cores 
