@@ -60,7 +60,7 @@ class Parser:
         # print(self.info)
         if not self._valid_replay(self.info, ping):
             self.sc2_proc.close()
-            print(self.info)
+            # print(self.info)
             raise Exception("{} is not a valid replay file!".format(self.replay_file_name + '.SC2Replay'))
 
         # global FILE_OP
@@ -163,6 +163,12 @@ class Parser:
 
 def parse_replay(replay_batch, agent_module, agent_cls, frames_per_game):
     for replay in replay_batch:
+        filename_without_suffix = os.path.splitext(basename("/a/b/c.txt"))[0]
+        filename = filename_without_suffix + ".p"
+
+        if os.path.exists("data_full/"+filename):
+            continue
+
         try:
             parser = Parser(replay, agent_cls(), frames_per_game=frames_per_game)
             parser.start()
@@ -198,5 +204,5 @@ def main(unused):
             p.join()
 
 if __name__ == "__main__":
-    FILE_OP= open("parsed.txt","w+")
+    # FILE_OP= open("parsed.txt","w+")
     app.run(main)
