@@ -9,8 +9,9 @@ pp = pprint.PrettyPrinter(indent=4)
 #filename = "fce8134bc5edf4fff731fefccd6e78dcc11006c035def9d0ae9ecd63f9fe7267.p"
 #filename = "fefa9e6630216c279f8a5a371bea283f091244452f77306376feadba7314b00f.p"
 #filename = "2e3b9605f05053390d59ca132893b0210ece353b991c12d62cab9193dd4a9bed.p"
-filename = "7ab0c4728b61cb9fa800dd27691d2f8e673b49a94aa6f01261e5fc7c15cb3619.p"
-temp = pickle.load(open("data/"+filename, "rb"))
+#filename = "7ab0c4728b61cb9fa800dd27691d2f8e673b49a94aa6f01261e5fc7c15cb3619.p"
+filename = "ff0b0467698a1cf727e170ef1409737049cd7d666259811c45a9f58b2a06ab3a.p"
+temp = pickle.load(open("data_full/"+filename, "rb"))
 
 print(temp.keys())
 
@@ -53,10 +54,16 @@ while i < len(temp['state']):
 	if temp['state'][i]['actions'] != []:
 #		print((numpy.array(temp['state'][i]['minimap'])).shape)
 
-		print(temp['state'][i]['actions'])
+		print(temp['state'][i])
+
+#		for a in temp['state'][i]['actions']:
+#			if a[1] == 'select_control_group':
+#				print(a)
+#				print(temp['state'][i])
+
 		counter += len(temp['state'][i]['actions'])
 #		print(temp['state'][i])
-#		break
+		break
 	i+=1
 
 print(counter)

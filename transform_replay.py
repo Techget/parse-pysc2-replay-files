@@ -164,10 +164,11 @@ class Parser:
 
 def parse_replay(replay_batch, agent_module, agent_cls, frames_per_game):
     for replay in replay_batch:
-        filename_without_suffix = os.path.splitext(os.path.basename("/a/b/c.txt"))[0]
+        filename_without_suffix = os.path.splitext(os.path.basename(replay))[0]
         filename = filename_without_suffix + ".p"
-
+        #print(filename)
         if os.path.exists("data_full/"+filename):
+            #print('exists continue, ', filename)
             continue
 
         try:
